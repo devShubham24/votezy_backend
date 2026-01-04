@@ -20,7 +20,7 @@ import com.vote.repository.ElectionSettingsRepository;
 
 import lombok.Data;
 
-@CrossOrigin
+@CrossOrigin(origins="*")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {

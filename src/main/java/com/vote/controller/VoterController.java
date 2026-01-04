@@ -19,7 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-@CrossOrigin
+@CrossOrigin(origins="*")
 @RestController
 @RequestMapping("/api")
 public class VoterController {

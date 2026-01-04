@@ -29,13 +29,29 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .cors(cors -> {})
             .authorizeHttpRequests(authz -> authz
-                // Public endpoints
-                .requestMatchers("/api/auth/**", "/api/admin/**", "/api/election-settings", "/api/candidates", "/api/candidates/**",
-                               "/api/election-results", "/api/election-winner", "/api/results-available","/api/isResult/declared","/api/vote-record/**").permitAll()
-                
-                // Admin only endpoints
-                .requestMatchers("/api/admin/**", "/api/voting-results", "/api/total-votes-cast",
-                               "/api/candidate/*/votes").hasRole("ADMIN")
+            		// Public endpoints
+            		.requestMatchers(
+            		    "/api/auth/**",
+            		    "/api/election-settings",
+            		    "/api/candidates",
+            		    "/api/candidates/**",
+            		    "/api/election-results",
+            		    "/api/election-winner",
+            		    "/api/results-available",
+            		    "/api/isResult/declared",
+            		    "/api/vote-record/**",
+            		    "/api/total-voters",
+            		    "/api/voted-successfully",
+            		    "/api/havent-voted"
+            		).permitAll()
+
+            		// Admin only
+            		.requestMatchers(
+            		    "/api/admin/**",
+            		    "/api/voting-results",
+            		    "/api/total-votes-cast",
+            		    "/api/candidate/*/votes"
+            		).hasRole("ADMIN")
                 
                 // Voter only endpoints
                 .requestMatchers("/api/vote/**","/api/profile", "/api/update-password", "/api/cast-vote", 
@@ -66,8 +82,11 @@ public class SecurityConfig {
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(Arrays.asList("http://127.0.0.1:5501", "http://localhost:5501"));
-        config.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
+        config.setAllowedOrigins(Arrays.asList(
+            "http://127.0.0.1:5500",
+            "http://localhost:5500"
+        ));
+        config.setAllowedHeaders(Arrays.asList("*"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
