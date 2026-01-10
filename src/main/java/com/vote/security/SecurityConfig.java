@@ -29,39 +29,44 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .cors(cors -> {})
             .authorizeHttpRequests(authz -> authz
-            		// Public endpoints
-            		.requestMatchers(
-            		    "/api/auth/**",
-            		    "/api/election-settings",
-            		    "/api/candidates",
-            		    "/api/candidates/**",
-            		    "/api/election-results",
-            		    "/api/election-winner",
-            		    "/api/results-available",
-            		    "/api/isResult/declared",
-            		    "/api/vote-record/**",
-            		    "/api/total-voters",
-            		    "/api/voted-successfully",
-            		    "/api/havent-voted"
-            		).permitAll()
-
-            		// Admin only
-            		.requestMatchers(
-            		    "/api/admin/**",
-            		    "/api/voting-results",
-            		    "/api/total-votes-cast",
-            		    "/api/candidate/*/votes"
-            		).hasRole("ADMIN")
+                // Public endpoints - NO /api/admin/** here!
+                .requestMatchers(
+                    "/api/auth/**",
+                    "/api/election-settings",
+                    "/api/candidates",
+                    "/api/candidates/**",
+                    "/api/election-results",
+                    "/api/election-winner",
+                    "/api/results-available",
+                    "/api/isResult/declared",
+                    "/api/vote-record/**",
+                    "/api/total-voters",
+                    "/api/voted-successfully",
+                    "/api/havent-voted"
+                ).permitAll()
+                
+                // Admin only endpoints - MUST come BEFORE anyRequest()
+                .requestMatchers(
+                    "/api/admin/**",
+                    "/api/voting-results",
+                    "/api/total-votes-cast",
+                    "/api/candidate/*/votes"
+                ).hasRole("ADMIN")
                 
                 // Voter only endpoints
-                .requestMatchers("/api/vote/**","/api/profile", "/api/update-password", "/api/cast-vote", 
-                               "/api/voting-status").hasRole("VOTER")
+                .requestMatchers(
+                    "/api/vote/**",
+                    "/api/profile", 
+                    "/api/update-password", 
+                    "/api/cast-vote", 
+                    "/api/voting-status"
+                ).hasRole("VOTER")
                 
                 // Candidate only endpoints
-                .requestMatchers("/api/candidate/profile", "/api/candidate/update-password").hasRole("CANDIDATE")
-                
-                // Public statistics endpoints (for dashboard or public display)
-                .requestMatchers("/api/total-voters", "/api/voted-successfully", "/api/havent-voted").permitAll()
+                .requestMatchers(
+                    "/api/candidate/profile", 
+                    "/api/candidate/update-password"
+                ).hasRole("CANDIDATE")
                 
                 .anyRequest().authenticated()
             )
@@ -69,10 +74,9 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
+        
         return http.build();
     }
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -84,13 +88,16 @@ public class SecurityConfig {
         config.setAllowCredentials(true);
         config.setAllowedOrigins(Arrays.asList(
             "http://127.0.0.1:5500",
-            "http://localhost:5500"
+            "http://localhost:5500",
+            "http://65.0.19.199",           // Add your frontend domain
+            "http://65.0.19.199:3000",      // If frontend runs on different port
+            "http://65.0.19.199:5500"       // Common frontend port
+            // Add any other frontend URLs you're using
         ));
         config.setAllowedHeaders(Arrays.asList("*"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-
+        
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
-    }
-}
+    }}
