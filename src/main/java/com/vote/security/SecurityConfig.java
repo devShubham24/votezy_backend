@@ -29,7 +29,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .cors(cors -> {})
             .authorizeHttpRequests(authz -> authz
-                // Public endpoints - NO /api/admin/** here!
+                // Public endpoints
                 .requestMatchers(
                     "/api/auth/**",
                     "/api/election-settings",
@@ -42,16 +42,17 @@ public class SecurityConfig {
                     "/api/vote-record/**",
                     "/api/total-voters",
                     "/api/voted-successfully",
-                    "/api/havent-voted"
+                    "/api/havent-voted",
+                    "/api/admin/**"  
                 ).permitAll()
                 
-                // Admin only endpoints - MUST come BEFORE anyRequest()
-                .requestMatchers(
-                    "/api/admin/**",
-                    "/api/voting-results",
-                    "/api/total-votes-cast",
-                    "/api/candidate/*/votes"
-                ).hasRole("ADMIN")
+                // Remove or comment out the admin role requirement
+                // .requestMatchers(
+                //     "/api/admin/**",
+                //     "/api/voting-results",
+                //     "/api/total-votes-cast",
+                //     "/api/candidate/*/votes"
+                // ).hasRole("ADMIN")
                 
                 // Voter only endpoints
                 .requestMatchers(
